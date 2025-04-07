@@ -1,0 +1,39 @@
+name: One-time Docker build and push on tag
+
+on:
+  push:
+    tags:
+      - 'py*-ssl*'  # ex. py3.14.2-ssl3.0.8
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse tag into versions
+        id: parse
+        run: |
+          TAG="${GITHUB_REF##*/}"
+          PYTHON_VER=$(echo $TAG | sed -E 's/^py([^ -]+)-ssl.*/\1/')
+          OPENSSL_VER=$(echo $TAG | sed -E 's/^py[^ -]+-ssl(.+)/\1/')
+          echo "PYTHON_VER=$PYTHON_VER" >> $GITHUB_ENV
+          echo "OPENSSL_VER=$OPENSSL_VER" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            PYTHON_VER=${{ env.PYTHON_VER }}
+            OPENSSL_VER=${{ env.OPENSSL_VER }}
+          tags: hirachan/insecure-python:${{ env.TAG }}
