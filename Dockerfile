@@ -1,7 +1,7 @@
 # Build Python environment which can use SSL3.0, TLS1.0, TLS1.1
 FROM debian:bookworm AS builder
 
-ENV PYTHON_VER 3.13.2
+ENV PYTHON_VER 3.13.3
 ENV OPENSSL_VER 3.4.1
 
 RUN apt update && \
