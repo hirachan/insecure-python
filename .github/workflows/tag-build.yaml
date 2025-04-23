@@ -36,6 +36,6 @@ jobs:
           build-args: |
             PYTHON_VER=${{ env.PYTHON_VER }}
             OPENSSL_VER=${{ env.OPENSSL_VER }}
-          tags:
-            - hirachan/insecure-python:${{ env.TAG }}
-            - hirachan/insecure-python:latest
+          tags: |
+            hirachan/insecure-python:${{ env.TAG }}
+            hirachan/insecure-python:latest
